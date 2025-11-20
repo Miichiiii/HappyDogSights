@@ -96,7 +96,7 @@ export default function Home() {
       {/* Spiel-Button Section */}
       <section className="bg-secondary/10 border-t border-border py-12">
         <div className="flex flex-col items-center gap-4">
-          <span className="text-lg font-medium text-foreground">Hätten Sie es gewusst?</span>
+          <span className="text-lg font-medium text-foreground">Testen Sie ihr Wissen?</span>
           <a
             href="https://bundeslaender-game-16ak.vercel.app"
             target="_blank"
