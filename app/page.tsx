@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { states, viewpointsByState } from '@/data/viewpoints'
 import { Search, MapPin, Heart } from 'lucide-react'
+import { dogPensionsByViewpoint } from '@/data/dog-pensions'
+
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -16,6 +18,13 @@ export default function Home() {
       state.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       state.displayName.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  // Zählt die Hundepensionen für alle Aussichtspunkte eines Bundeslandes
+  const getPensionsForState = (stateName: string) =>
+    (viewpointsByState[stateName] || []).reduce(
+      (sum, vp) => sum + (dogPensionsByViewpoint[vp.id]?.length || 0),
+      0
+    )
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted">
@@ -78,6 +87,12 @@ export default function Home() {
                       <MapPin className="w-4 h-4 text-accent" />
                       <span>{viewpointsByState[state.name]?.length || 0} Aussichtspunkte</span>
                     </div>
+                    {getPensionsForState(state.name) > 0 && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Heart className="w-4 h-4 text-pink-500" />
+                        <span>{getPensionsForState(state.name)} Hundepensionen in der Nähe</span>
+                      </div>
+                    )}
                     <p className="text-sm text-foreground/70 line-clamp-2">{state.description}</p>
                   </div>
                 </CardContent>
