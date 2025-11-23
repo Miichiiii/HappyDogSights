@@ -4,7 +4,7 @@ import { useState, use } from "react";
 import Link from "next/link";
 import { viewpointsByState } from "@/data/viewpoints";
 import { ReviewSection } from "@/components/review-section";
-import { SimpleMap } from "@/components/simple-map";
+import { Map } from "@/components/map";
 import {
   Card,
   CardContent,
@@ -134,15 +134,21 @@ export default function ViewpointPage({
                 <CardTitle>Über diesen Aussichtspunkt</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-foreground/80">{viewpoint.description}  {/* Website-Button */}
-  {viewpoint.href && (
-    <Button variant="link" size="sm" asChild className="mt-4" >
-      <a href={viewpoint.href} target="_blank" rel="noopener noreferrer">
-        <ExternalLink className="w-3 h-3 mr-1" />
-        Weitere Informationen
-      </a>
-    </Button>
-  )} </p>
+                <p className="text-foreground/80">
+                  {viewpoint.description} {/* Website-Button */}
+                  {viewpoint.href && (
+                    <Button variant="link" size="sm" asChild className="mt-4">
+                      <a
+                        href={viewpoint.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink className="w-3 h-3 mr-1" />
+                        Weitere Informationen
+                      </a>
+                    </Button>
+                  )}{" "}
+                </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-primary/5 rounded-lg p-4">
                     <p className="text-sm text-muted-foreground">Breite</p>
@@ -232,10 +238,29 @@ export default function ViewpointPage({
                 <CardTitle>Standort & Umgebung</CardTitle>
               </CardHeader>
               <CardContent>
-                <SimpleMap
-                  viewpoints={mapViewpoints}
-                  title="Aussichtspunkt & Pensionen"
-                />
+                <div className="w-full h-96">
+                  <Map
+                    latitude={viewpoint.lat}
+                    longitude={viewpoint.lng}
+                    zoom={13}
+                    markers={[
+                      {
+                        lat: viewpoint.lat,
+                        lng: viewpoint.lng,
+                        title: viewpoint.name,
+                        type: "viewpoint",
+                        id: viewpoint.id,
+                      },
+                      ...pensions.map((pension, idx) => ({
+                        lat: viewpoint.lat + (Math.random() - 0.5) * 0.05,
+                        lng: viewpoint.lng + (Math.random() - 0.5) * 0.05,
+                        title: pension.name,
+                        type: "pension" as const,
+                        id: `pension-${idx}`,
+                      })),
+                    ]}
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>

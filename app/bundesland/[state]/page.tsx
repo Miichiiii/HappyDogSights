@@ -3,7 +3,7 @@
 import { useState, use } from "react";
 import Link from "next/link";
 import { viewpointsByState, states } from "@/data/viewpoints";
-import { SimpleMap } from "@/components/simple-map";
+import { StateMap } from "@/components/state-map";
 import {
   Card,
   CardContent,
@@ -68,10 +68,7 @@ export default function StatePage({
 
       <section className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <SimpleMap
-            viewpoints={viewpoints}
-            title={`${stateInfo.displayName} - ${viewpoints.length} Aussichtspunkte`}
-          />
+          <StateMap viewpoints={viewpoints} />
         </div>
 
         {/* Search Bar */}
