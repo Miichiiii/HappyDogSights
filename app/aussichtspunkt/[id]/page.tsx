@@ -169,9 +169,7 @@ export default function ViewpointPage({ params }: { params: Promise<{ id: string
 
                 {showReviewsCard && (
                   <ViewpointReviews
-                    reviews={reviews}
-                    setReviews={setReviews}
-                    viewpointId={viewpoint.id}
+                    {...({ reviews, setReviews, viewpointId: viewpoint.id } as any)}
                   />
                 )}
               </CardContent>
