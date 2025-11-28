@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { viewpointsByState } from "@/data/viewpoints";
 import { Map } from "@/components/map";
@@ -26,8 +27,9 @@ interface Review {
   comment: string;
   created_at: string;
 }
-export default function ViewpointPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function ViewpointPage() {
+  const params = useParams();
+  const id = params?.id as string;
   const [isFavorite, setIsFavorite] = useState(false);
   const [showReviewsCard, setShowReviewsCard] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
@@ -127,7 +129,7 @@ export default function ViewpointPage({ params }: { params: Promise<{ id: string
                   className="w-full flex justify-between items-center"
                   onClick={() => setShowInfo(!showInfo)}
                 >
-                  <span>Information zum Aussichtspunkt</span>
+                  <span>Informationen zum Aussichtspunkt</span>
                   <span className="text-muted-foreground">{showInfo ? "▲" : "▼"}</span>
                 </Button>
 
