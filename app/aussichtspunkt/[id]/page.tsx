@@ -1,9 +1,14 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import { viewpointsByState } from "@/data/viewpoints";
+import { viewpointsByState, Viewpoint } from "@/data/viewpoints";
+import { dogPensionsByViewpoint } from "@/data/dog-pensions";
 import { Map } from "@/components/map";
+import { ViewpointReviews } from "@/components/ViewpointReviews";
+import { getRatings, Rating } from "@/lib/ratings";
+
 import {
   Card,
   CardContent,
@@ -12,19 +17,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, ExternalLink, ChevronLeft, Heart, Star } from "lucide-react";
-import { dogPensionsByViewpoint } from "@/data/dog-pensions";
-import { ViewpointInfo } from "@/components/ViewpointInfo";
-import { ViewpointReviews } from "@/components/ViewpointReviews";
+import { MapPin, ExternalLink, ChevronLeft, Heart } from "lucide-react";
 
-export default function ViewpointPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function ViewpointPage() {
+  const params = useParams();
+  const id = params?.id as string;
+
   const [isFavorite, setIsFavorite] = useState(false);
-  const [showReviews, setShowReviews] = useState(false);
+  const [showReviewsCard, setShowReviewsCard] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [reviews, setReviews] = useState<Rating[]>([]);
 
-
-  let viewpoint = null;
+  // Aussichtspunkt suchen
+  let viewpoint: Viewpoint | null = null;
   let stateKey = "";
 
   for (const [state, viewpoints] of Object.entries(viewpointsByState)) {
@@ -37,6 +42,16 @@ export default function ViewpointPage({ params }: { params: Promise<{ id: string
   }
 
   const pensions = dogPensionsByViewpoint[id] || [];
+
+  // Bewertungen beim Laden holen
+  useEffect(() => {
+    async function fetchRatings() {
+      if (!viewpoint) return;
+      const data = await getRatings(viewpoint.id);
+      setReviews(data);
+    }
+    fetchRatings();
+  }, [viewpoint]);
 
   if (!viewpoint) {
     return (
@@ -91,95 +106,63 @@ export default function ViewpointPage({ params }: { params: Promise<{ id: string
           {/* Linke Spalte */}
           <div className="lg:col-span-2 space-y-6">
             {/* Beschreibung */}
-        <Card>
-  <CardHeader className="pb-2">
-    <CardTitle>Über diesen Aussichtspunkt</CardTitle>
-    <CardDescription>
-      <p className="mt-1 mb-4 text-foreground/80 leading-relaxed">{viewpoint.description}</p>
-    </CardDescription>
-  </CardHeader>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle>Über diesen Aussichtspunkt</CardTitle>
+                <CardDescription>
+                  <p className="mt-1 mb-4 text-foreground/80 leading-relaxed">{viewpoint.description}</p>
+                </CardDescription>
+              </CardHeader>
 
-  <CardContent className="space-y-4">
-    {/* Informations-Button */}
-    <Button
-      variant="outline"
-      size="sm"
-      className="w-full flex justify-between items-center"
-      onClick={() => setShowInfo(!showInfo)}
-    >
-      <span>Informationen zum Aussichtspunkt</span>
-      <span className="text-muted-foreground">▼</span>
-    </Button>
+              <CardContent className="space-y-4">
+                {/* Informations-Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full flex justify-between items-center"
+                  onClick={() => setShowInfo(!showInfo)}
+                >
+                  <span>Information zum Aussichtspunkt</span>
+                  <span className="text-muted-foreground">{showInfo ? "▲" : "▼"}</span>
+                </Button>
 
-    {/* Aufklappbarer Bereich für Informationen */}
-    {showInfo && (
-   <div className="mt-2 pl-8 pt-3 pb-3 border rounded-lg bg-muted/50 flex items-center gap-6">
-    {/* Länge */}
-    <p className="text-sm text-muted-foreground m-0">
-      Länge: {viewpoint.lat}
-    </p>
+                {showInfo && (
+                  <div className="mt-2 pl-8 pt-3 pb-3 border rounded-lg bg-muted/50 flex items-center gap-6">
+                    <p className="text-sm text-muted-foreground m-0">Länge: {viewpoint.lat}</p>
+                    <p className="text-sm text-muted-foreground m-0">Breite: {viewpoint.lng}</p>
+                    <Button variant="link" className="flex items-center font-semibold p-0 ml-4" asChild>
+                      <a href={viewpoint.href} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        Webseite zum Aussichtspunkt
+                      </a>
+                    </Button>
+                  </div>
+                )}
 
-    {/* Breite */}
-    <p className="text-sm text-muted-foreground m-0">
-      Breite: {viewpoint.lng}
-    </p>
+                {/* Bewertungen */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full flex justify-between items-center"
+                  onClick={() => setShowReviewsCard(!showReviewsCard)}
+                >
+                  <span>
+                    Bewertungen & Rezension
+                    {reviews.length > 0 &&
+                      ` – ⭐ ${(reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)}`}
+                  </span>
+                  <span className="text-muted-foreground">{showReviewsCard ? "▲" : "▼"}</span>
+                </Button>
 
-    {/* Webseite als richtiger Link */}
-    <Button
-      variant="link"
-      className="flex items-center font-semibold p-0 ml-4"
-      asChild
-    >
-      <a
-        href={viewpoint.href}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <ExternalLink className="w-4 h-4 mr-1" />
-        Webseite zum Aussichtspunkt
-      </a>
-    </Button>
-  </div>
-    )}
-
-    {/* Bewertungs-Button oben mit Pfeil */}
-    <Button
-      variant="outline"
-      size="sm"
-      className="w-full flex justify-between items-center"
-      onClick={() => setShowReviews(!showReviews)}
-    >
-      <span>Bewertungen & Rezensionen</span>
-      <span className="text-muted-foreground">▼</span>
-    </Button>
-
-    {/* Aufklappbarer Bereich für Bewertungen */}
-    {showReviews && (
-    <div className="mt-2 p-3 border rounded-lg bg-muted/50 flex flex-wrap gap-3">
-  {/* Durchschnittliche Bewertungen ansehen */}
-  <Button
-    variant="link"
-    className="flex items-center justify-start font-semibold"
-  >
-    <Star className="w-4 h-4 mr-1" />
-    Durchschnittliche 4,8 Bewertungen ansehen
-  </Button>
-
-  {/* Eigene Bewertung schreiben */}
-  <Button
-    variant="link"
-    className="flex items-center justify-start font-semibold"
-  >
-    <Star className="w-4 h-4 mr-1" />
-    Eigene Bewertung schreiben
-  </Button>
-</div>
-    )}
-  </CardContent>
-</Card>
-
-
-
+                {showReviewsCard && (
+                  <ViewpointReviews
+                    reviews={reviews}
+                    setReviews={setReviews}
+                    viewpointId={viewpoint.id}
+                  />
+                )}
+              </CardContent>
+            </Card>
 
             {/* Hundepensionen */}
             <Card>
@@ -187,14 +170,12 @@ export default function ViewpointPage({ params }: { params: Promise<{ id: string
                 <CardTitle>Hundepensionen in der Nähe</CardTitle>
                 <CardDescription className="mt-1 mb-4">{pensions.length} Pensionen gefunden</CardDescription>
               </CardHeader>
-
               <CardContent className="space-y-4">
                 {pensions.length > 0 ? (
                   pensions.map((pension) => {
                     const [open, setOpen] = useState(false);
                     return (
                       <div key={pension.id} className="w-full">
-                        {/* Button, um aufzuklappen */}
                         <Button
                           variant="outline"
                           size="sm"
@@ -205,22 +186,20 @@ export default function ViewpointPage({ params }: { params: Promise<{ id: string
                           <span>{open ? "▲" : "▼"}</span>
                         </Button>
 
-                        {/* Aufgeklappter Inhalt */}
                         {open && (
                           <div className="mt-2 pl-8 pt-3 pb-3 border rounded-lg bg-muted/50 space-y-2">
                             <p className="text-sm text-muted-foreground flex items-center gap-1">
-                              <MapPin className="w-3 h-3" />
                               {pension.distance} km entfernt
                             </p>
                             <p className="text-sm text-foreground/70">{pension.description}</p>
                             <div className="flex gap-2">
                               <Button variant="link" size="sm" asChild>
-                                <a href={`tel:${pension.phone}`}>{/*telefon-icon eingefügt*/}<svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.08 4.18 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.72c.13.9.38 1.78.74 2.61a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l.47-.47a2 2 0 0 1 2.11-.45c.83.36 1.71.61 2.61.74A2 2 0 0 1 22 16.92z"/>
-              </svg>Anrufen</a>
+                                <a href={`tel:${pension.phone}`}>📞 Anrufen</a>
                               </Button>
                               <Button variant="link" size="sm" asChild>
-                                <a href={pension.website} target="_blank" rel="noopener noreferrer">{/*Website-icon eingefügt*/} <ExternalLink className="w-4 h-4 mr-1" />Website</a>
+                                <a href={pension.website} target="_blank" rel="noopener noreferrer">
+                                  <ExternalLink className="w-4 h-4 mr-1" /> Website
+                                </a>
                               </Button>
                             </div>
                           </div>
@@ -235,7 +214,7 @@ export default function ViewpointPage({ params }: { params: Promise<{ id: string
             </Card>
           </div>
 
-          {/* Rechte Spalte - Karte */}
+          {/* Rechte Spalte */}
           <div className="lg:col-span-1">
             <Card>
               <CardHeader>
