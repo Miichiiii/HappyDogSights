@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { viewpointsByState, Viewpoint } from "@/data/viewpoints";
@@ -22,11 +22,13 @@ import { MapPin, ExternalLink, ChevronLeft, Heart } from "lucide-react";
 export default function ViewpointPage() {
   const params = useParams();
   const id = params?.id as string;
+  const locale = params?.locale as string;
 
   const [isFavorite, setIsFavorite] = useState(false);
   const [showReviewsCard, setShowReviewsCard] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [reviews, setReviews] = useState<Rating[]>([]);
+  const [expandedPension, setExpandedPension] = useState<string | null>(null);
 
   // Aussichtspunkt suchen
   let viewpoint: Viewpoint | null = null;
@@ -58,7 +60,7 @@ export default function ViewpointPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Aussichtspunkt nicht gefunden</h1>
-          <Link href="/">
+          <Link href={`/${locale}`}>
             <Button>Zur Startseite</Button>
           </Link>
         </div>
@@ -72,7 +74,7 @@ export default function ViewpointPage() {
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <Link
-            href={`/bundesland/${stateKey}`}
+            href={`/${locale}/bundesland/${stateKey}`}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-2"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -127,10 +129,10 @@ export default function ViewpointPage() {
                 </Button>
 
                 {showInfo && (
-                  <div className="mt-2 pl-8 pt-3 pb-3 border rounded-lg bg-muted/50 flex items-center gap-6">
+                  <div className="mt-2 pl-8 pt-3 pb-3 border rounded-lg bg-muted/50 flex flex-col gap-3">
                     <p className="text-sm text-muted-foreground m-0">Länge: {viewpoint.lat}</p>
                     <p className="text-sm text-muted-foreground m-0">Breite: {viewpoint.lng}</p>
-                    <Button variant="link" className="flex items-center font-semibold p-0 ml-4" asChild>
+                    <Button variant="link" className="flex items-center font-semibold p-0" asChild>
                       <a href={viewpoint.href} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="w-4 h-4 mr-1" />
                         Webseite zum Aussichtspunkt
@@ -172,41 +174,40 @@ export default function ViewpointPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {pensions.length > 0 ? (
-                  pensions.map((pension) => {
-                    const [open, setOpen] = useState(false);
-                    return (
-                      <div key={pension.id} className="w-full">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full flex justify-between items-center mb-2"
-                          onClick={() => setOpen(!open)}
-                        >
-                          <span>{pension.name}</span>
-                          <span>{open ? "▲" : "▼"}</span>
-                        </Button>
-
-                        {open && (
-                          <div className="mt-2 pl-8 pt-3 pb-3 border rounded-lg bg-muted/50 space-y-2">
-                            <p className="text-sm text-muted-foreground flex items-center gap-1">
-                              {pension.distance} km entfernt
-                            </p>
-                            <p className="text-sm text-foreground/70">{pension.description}</p>
-                            <div className="flex gap-2">
-                              <Button variant="link" size="sm" asChild>
-                                <a href={`tel:${pension.phone}`}>📞 Anrufen</a>
-                              </Button>
-                              <Button variant="link" size="sm" asChild>
-                                <a href={pension.website} target="_blank" rel="noopener noreferrer">
-                                  <ExternalLink className="w-4 h-4 mr-1" /> Website
-                                </a>
-                              </Button>
-                            </div>
-                          </div>
+                  pensions.map((pension) => (
+                    <div key={pension.id} className="w-full">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full flex justify-between items-center mb-2"
+                        onClick={() => setExpandedPension(
+                          expandedPension === pension.id ? null : pension.id
                         )}
-                      </div>
-                    );
-                  })
+                      >
+                        <span>{pension.name}</span>
+                        <span>{expandedPension === pension.id ? "▲" : "▼"}</span>
+                      </Button>
+
+                      {expandedPension === pension.id && (
+                        <div className="mt-2 pl-8 pt-3 pb-3 border rounded-lg bg-muted/50 space-y-2">
+                          <p className="text-sm text-muted-foreground flex items-center gap-1">
+                            {pension.distance} km entfernt
+                          </p>
+                          <p className="text-sm text-foreground/70">{pension.description}</p>
+                          <div className="flex gap-2">
+                            <Button variant="link" size="sm" asChild>
+                              <a href={`tel:${pension.phone}`}>📞 Anrufen</a>
+                            </Button>
+                            <Button variant="link" size="sm" asChild>
+                              <a href={pension.website} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="w-4 h-4 mr-1" /> Website
+                              </a>
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))
                 ) : (
                   <p className="text-muted-foreground">Keine Hundepensionen gefunden</p>
                 )}

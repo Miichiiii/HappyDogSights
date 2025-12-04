@@ -127,6 +127,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --container-xl: 50rem;
 }
 
 @layer base {
