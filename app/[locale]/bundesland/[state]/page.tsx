@@ -27,11 +27,15 @@ export default function StatePage({
   const stateInfo = states.find((s) => s.name === decodedState);
   const viewpoints = viewpointsByState[decodedState] || [];
 
-  const filteredViewpoints = viewpoints.filter(
-    (v) =>
-      v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      v.city.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredViewpoints = viewpoints.filter((v) => {
+  const query = searchQuery.toLowerCase();
+  return (
+    v.name.toLowerCase().includes(query) ||
+    v.city.toLowerCase().includes(query) ||
+    v.description.toLowerCase().includes(query) ||
+    v.id.toLowerCase().includes(query) // пошук по aussichtspunkt (ID/slug)
   );
+});
 
   if (!stateInfo) {
     return (
