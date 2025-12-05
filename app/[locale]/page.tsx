@@ -19,9 +19,9 @@ const translations = {
   de: {
     title: "Happy Dog Sights 🐶",
     subtitle: "Schöne Ausblicke & Hundepensionen",
-    heroTitle: "Entdecke Deutschlands schönste Aussichtspunkte mit deinem Hund",
+    heroTitle: "Entdecke Deutschlands schönste Aussichtspunkte,<br /> perfekt für dich <br />und deinen Hund",
     heroDesc: "Über 320 Aussichtspunkte in 16 Bundesländern mit <br />Informationen zu Hundepensionen in der Nähe.",
-    searchPlaceholder: "Nach Bundesland oder Aussichtspunkt suchen...",
+    searchPlaceholder: "Schnellsuche...",
     mapTitle: "Alle Aussichtspunkte auf einen Blick",
     mapDesc: "Erkunde interaktiv über",
     mapDesc2: "Aussichtspunkte in ganz Deutschland",
@@ -39,9 +39,9 @@ const translations = {
   en: {
     title: "Happy Dog Sights 🐶",
     subtitle: "Beautiful Views & Dog Kennels",
-    heroTitle: "Discover Germany's most beautiful viewpoints with your dog",
+    heroTitle: "Discover Germany's most beautiful viewpoints,<br /> perfect for you<br /> and your dog",
     heroDesc: "Over 320 viewpoints in 16 federal states with <br />information about dog kennels nearby.",
-    searchPlaceholder: "Search for state or viewpoint...",
+    searchPlaceholder: "Quick search...",
     mapTitle: "All viewpoints at a glance",
     mapDesc: "Explore interactively over",
     mapDesc2: "viewpoints throughout Germany",
@@ -122,8 +122,8 @@ export default function Home({
                   flex flex-col justify-start pt-10 sm:pt-16 lg:pt-24">
 
     <div className="max-w-xl">
-      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-md">
-        {t.heroTitle}
+      <h2 className="text-3xl sm:text-4xl lg:text-4xl font-bold text-white mb-4 drop-shadow-md">
+        <span dangerouslySetInnerHTML={{ __html: t.heroTitle }} />
         
       </h2>
       <p className="text-base sm:text-lg text-gray-100 mb-6 drop-shadow">
