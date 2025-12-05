@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 const geist = Geist({ subsets: ['latin'] })
 const geistMono = Geist_Mono({ subsets: ['latin'] })
 
+
 export const metadata: Metadata = {
   title: 'Aussichtspunkte Deutschland | Hundepensionen in der Nähe',
   description:
