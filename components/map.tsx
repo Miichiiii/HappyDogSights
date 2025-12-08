@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import 'leaflet/dist/leaflet.css'
 
 interface MapProps {
   latitude: number
@@ -30,14 +31,12 @@ export function Map({ latitude, longitude, zoom = 13, markers = [] }: MapProps) 
 
     // Dynamischer Import von Leaflet, damit SSR nicht bricht
     import('leaflet').then(L => {
-      import('leaflet/dist/leaflet.css')
-
       if (mapInstanceRef.current) {
         mapInstanceRef.current.setView([latitude, longitude], zoom)
         return
       }
 
-      const map = L.map(mapRef.current).setView([latitude, longitude], zoom)
+      const map = L.map(mapRef.current!).setView([latitude, longitude], zoom)
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors',

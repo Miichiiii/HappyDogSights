@@ -32,7 +32,7 @@ export default function LocaleLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body>
+      <body className="font-sans antialiased">
         {children}
       </body>
     </html>

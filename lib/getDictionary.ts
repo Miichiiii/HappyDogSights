@@ -1,5 +1,5 @@
-import de from './i18n/de.json';
-import en from './i18n/en.json';
+import de from '@/locales/de.json';
+import en from '@/locales/en.json';
 
 const dictionaries: Record<string, any> = { de, en };
 
