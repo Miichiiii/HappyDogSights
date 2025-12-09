@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MapPin, ChevronLeft, Star } from "lucide-react";
-
+import { useTranslations } from 'next-intl';
 export default function StatePage({
   params,
 }: {
@@ -27,11 +27,15 @@ export default function StatePage({
   const stateInfo = states.find((s) => s.name === decodedState);
   const viewpoints = viewpointsByState[decodedState] || [];
 
-  const filteredViewpoints = viewpoints.filter(
-    (v) =>
-      v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      v.city.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredViewpoints = viewpoints.filter((v) => {
+  const query = searchQuery.toLowerCase();
+  return (
+    v.name.toLowerCase().includes(query) ||
+    v.city.toLowerCase().includes(query) ||
+    v.description.toLowerCase().includes(query) ||
+    v.id.toLowerCase().includes(query) // пошук по aussichtspunkt (ID/slug)
   );
+});
 
   if (!stateInfo) {
     return (
@@ -68,38 +72,37 @@ export default function StatePage({
 
       <section className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <StateMap viewpoints={viewpoints} />
-        </div>
-
-        {/* Search Bar */}
-        <div className="mb-8">
           <Input
             placeholder="Nach Aussichtspunkt suchen..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-12 bg-white"
+            className="w-full"
           />
         </div>
 
-        {/* Viewpoints Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <StateMap viewpoints={filteredViewpoints} />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
           {filteredViewpoints.map((viewpoint) => (
             <Link key={viewpoint.id} href={`/aussichtspunkt/${viewpoint.id}`}>
-              <Card className="h-full hover:shadow-lg hover:border-primary transition-all cursor-pointer group">
+              <Card className="h-full hover:shadow-xl transition-all cursor-pointer">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-primary group-hover:text-accent transition-colors line-clamp-2">
-                    {viewpoint.name}
-                  </CardTitle>
-                  <CardDescription className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    {viewpoint.city}
-                  </CardDescription>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <CardTitle className="line-clamp-2">
+                        {viewpoint.name}
+                      </CardTitle>
+                      <CardDescription className="flex items-center gap-1 mt-1">
+                        <MapPin className="w-3 h-3" />
+                        {viewpoint.city}
+                      </CardDescription>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-foreground/70 line-clamp-3 mb-4">
+                  <p className="text-sm text-muted-foreground line-clamp-3">
                     {viewpoint.description}
                   </p>
-                 
                 </CardContent>
               </Card>
             </Link>
@@ -116,4 +119,4 @@ export default function StatePage({
       </section>
     </div>
   );
-}
+} 
