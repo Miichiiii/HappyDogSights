@@ -14,7 +14,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MapPin, ChevronLeft, Star } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 export default function StatePage({
   params,

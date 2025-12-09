@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning>
+    <html lang="de" suppressHydrationWarning>
       <body className={geist.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
