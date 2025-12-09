@@ -3,7 +3,7 @@ export const states = [
     name: 'Baden-Württemberg', 
     displayName: 'Baden-Württemberg', 
     description: 'Schwarzwald, Bodensee und wunderbare Burgen', 
-    image: "/images/Baden-Württemberg.png"
+    image: "/images/Baden-Wuerttemberg.png"
   },
   { 
     name: 'Bayern', 
@@ -93,7 +93,7 @@ export const states = [
     name: 'Thüringen', 
     displayName: 'Thüringen', 
     description: 'Wartburg, Hainich und Thüringerwald',
-    image: "/images/Thüringen.png"
+    image: "/images/Thueringen.png"
   }
 ];
 
