@@ -14,13 +14,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MapPin, ChevronLeft, Star } from "lucide-react";
-import { useTranslations } from 'next-intl';
+
 export default function StatePage({
   params,
 }: {
-  params: Promise<{ state: string }>;
+  params: Promise<{ state: string; locale: string }>;
 }) {
-  const { state } = use(params);
+  const { state, locale } = use(params);
   const [searchQuery, setSearchQuery] = useState("");
   const decodedState = decodeURIComponent(state);
 
@@ -28,14 +28,14 @@ export default function StatePage({
   const viewpoints = viewpointsByState[decodedState] || [];
 
   const filteredViewpoints = viewpoints.filter((v) => {
-  const query = searchQuery.toLowerCase();
-  return (
-    v.name.toLowerCase().includes(query) ||
-    v.city.toLowerCase().includes(query) ||
-    v.description.toLowerCase().includes(query) ||
-    v.id.toLowerCase().includes(query) // пошук по aussichtspunkt (ID/slug)
-  );
-});
+    const query = searchQuery.toLowerCase();
+    return (
+      v.name.toLowerCase().includes(query) ||
+      v.city.toLowerCase().includes(query) ||
+      v.description.toLowerCase().includes(query) ||
+      v.id.toLowerCase().includes(query) // пошук по aussichtspunkt (ID/slug)
+    );
+  });
 
   if (!stateInfo) {
     return (
@@ -55,7 +55,7 @@ export default function StatePage({
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <Link
-            href="/"
+            href={`/${locale}`}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-2"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -84,7 +84,10 @@ export default function StatePage({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
           {filteredViewpoints.map((viewpoint) => (
-            <Link key={viewpoint.id} href={`/aussichtspunkt/${viewpoint.id}`}>
+            <Link
+              key={viewpoint.id}
+              href={`/${locale}/aussichtspunkt/${viewpoint.id}`}
+            >
               <Card className="h-full hover:shadow-xl transition-all cursor-pointer">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
@@ -119,4 +122,4 @@ export default function StatePage({
       </section>
     </div>
   );
-} 
+}
